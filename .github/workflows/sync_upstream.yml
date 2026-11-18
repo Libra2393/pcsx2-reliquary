@@ -1,0 +1,46 @@
+name: 🔄 Sync from AITUS95 upstream
+
+# Pulls new work from AITUS95/pcsx2-reliquary into this fork once a day.
+# Uses a merge (never a force push), so this fork's own commits are kept.
+# If a merge conflict happens, the run fails and nothing is pushed.
+# Note: GITHUB_TOKEN cannot push changes to workflow files. If upstream edits
+# a file in .github/workflows, this run fails and the merge must be done by hand.
+
+on:
+  schedule:
+    - cron: "17 9 * * *" # daily, ~3:17 AM Central
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-upstream
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    if: github.repository == 'Libra2393/pcsx2-reliquary'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout fork
+        uses: actions/checkout@v4
+        with:
+          ref: master
+          fetch-depth: 0
+          submodules: false
+
+      - name: Merge upstream master
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git remote add upstream https://github.com/AITUS95/pcsx2-reliquary.git
+          git fetch --no-tags upstream master
+          if git merge-base --is-ancestor upstream/master HEAD; then
+            echo "Already up to date with upstream."
+            exit 0
+          fi
+          echo "New upstream commits:"
+          git log --oneline HEAD..upstream/master
+          git merge --no-edit -m "Merge AITUS95/pcsx2-reliquary master" upstream/master
+          git push origin HEAD:master
