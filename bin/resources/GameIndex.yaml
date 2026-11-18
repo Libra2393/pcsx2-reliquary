@@ -67471,6 +67471,10 @@ SLUS-20611:
   name: "World Series Baseball 2K3"
   region: "NTSC-U"
   compat: 3
+  gameFixes:
+    - VUCommunicationHack # Experimental: same Blue-Shift engine as Marvel Nemesis.
+    - VU1MaddiHack # Experimental: copied from Marvel Nemesis.
+    - GSZeroStrideHack # Experimental: copied from Marvel Nemesis.
 SLUS-20613:
   name: "Tom Clancy's Ghost Recon"
   region: "NTSC-U"
@@ -68481,6 +68485,10 @@ SLUS-20793:
 SLUS-20794:
   name: "ESPN - Major League Baseball"
   region: "NTSC-U"
+  gameFixes:
+    - VUCommunicationHack # Experimental: same Blue-Shift engine as Marvel Nemesis.
+    - VU1MaddiHack # Experimental: copied from Marvel Nemesis.
+    - GSZeroStrideHack # Experimental: copied from Marvel Nemesis.
 SLUS-20795:
   name: "Bloody Roar 4"
   region: "NTSC-U"
