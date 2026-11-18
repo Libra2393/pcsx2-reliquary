@@ -138,7 +138,9 @@ jobs:
 
   # Windows
   build_windows_deps:
-    if: github.repository == 'DiscoStarslayer/pcsx2-reliquary'
+    # Also run on forks when a release is started by hand, otherwise the
+    # Windows build (and the whole upload step) gets skipped on forks.
+    if: github.event_name == 'workflow_dispatch' || github.repository == 'DiscoStarslayer/pcsx2-reliquary'
     name: "Windows Dependencies"
     uses: ./.github/workflows/windows_deps_build.yml
 
@@ -189,7 +191,8 @@ jobs:
 
   # Upload the Artifacts
   upload_artifacts:
-    if: github.event_name == 'workflow_dispatch' || github.repository == 'PCSX2/pcsx2'
+    # always(): still publish the Linux/Windows builds if an optional job (e.g. macOS) fails.
+    if: always() && needs.cut-release.result == 'success' && (github.event_name == 'workflow_dispatch' || github.repository == 'PCSX2/pcsx2')
     needs:
       - cut-release
       - build_linux_flatpak
