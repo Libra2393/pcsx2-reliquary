@@ -96,6 +96,19 @@ Same game, same settings (default + Vulkan), official PCSX2 v2.8.2 (no Blue-Shif
 
 Result: the Marvel Nemesis fixes are what let ESPN Major League Baseball reach gameplay. They cost a lot of speed, even in menus. The black polygons are a separate bug still to find.
 
+### Hunting the black polygons (ESPN MLB, this fork v0.0.1)
+
+| Setting changed | Black polygons | Speed |
+| --- | --- | --- |
+| None (Vulkan) | Yes, near the camera | ~67% |
+| None (ParallelGS renderer) | Yes | 53–59% |
+| VU0/VU1 clamping: Extra + Preserve Sign | Still there | ~71% |
+| VU0/VU1 soft-float (exact PS2 math) | Still there, plus more light-green patches on the field | ~60% |
+
+What this tells us:
+- ParallelGS draws the PS2 graphics chip very accurately and still shows the bug. So the polygon corners are already wrong when they reach the graphics chip.
+- Clamping and exact math did not fix it. So it is probably not a math precision problem. Timing between the EE and the VUs is the next suspect.
+
 ## Notes for recomp projects
 
 *To be written after testing.*
