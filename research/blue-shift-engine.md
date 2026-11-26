@@ -80,10 +80,21 @@ other settings default.
 | Marvel Nemesis | SLES-53585 | | | | | | |
 | Marvel Nemesis | SLKA-25311 | | | | | | |
 | Marvel Nemesis (Demo) | SLUS-29156 | | | | | | |
-| ESPN Major League Baseball | SLUS-20794 | | | | | | |
+| ESPN Major League Baseball | SLUS-20794 | v0.0.1 | Yes | Reaches gameplay | 53–59% (ParallelGS), 67% (Vulkan) | No: black jagged polygons near the camera | Menus and videos also slow (~53%). Thread Pinning on: no change. GPU only ~9% busy. Froze on exit. |
 | World Series Baseball 2K3 | SLUS-20611 | | | | | | |
 
-Test machine: *(fill in: CPU, GPU, OS)*
+Test machine: Intel i7-12700K, NVIDIA RTX 3070, CachyOS Linux. Tested 2026-11-26. BIOS: SCPH-70012 (USA v2.00).
+
+### Comparison with official PCSX2
+
+Same game, same settings (default + Vulkan), official PCSX2 v2.8.2 (no Blue-Shift fixes):
+
+| Build | Menus | Entering a game | Black polygons |
+| --- | --- | --- | --- |
+| Official PCSX2 v2.8.2 | Full speed (60 fps) | Froze before any 3D was shown | n/a (never reached 3D) |
+| This fork v0.0.1 | ~53% | Reaches gameplay | Yes, near the camera |
+
+Result: the Marvel Nemesis fixes are what let ESPN Major League Baseball reach gameplay. They cost a lot of speed, even in menus. The black polygons are a separate bug still to find.
 
 ## Notes for recomp projects
 
