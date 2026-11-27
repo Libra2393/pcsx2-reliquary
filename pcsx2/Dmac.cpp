@@ -113,9 +113,16 @@ static void LogBadDmaAddr(const char* func, u32 raw_addr, u32 masked_addr)
 			const DMACh& ch;
 		};
 		const ChannelInfo channels[] = {
-			{"VIF0", vif0ch}, {"VIF1", vif1ch}, {"GIF", gifch}, {"IPU0 (fromIPU)", ipu0ch},
-			{"IPU1 (toIPU)", ipu1ch}, {"SIF0", sif0ch}, {"SIF1", sif1ch}, {"SIF2", sif2dma},
-			{"SPR0 (fromSPR)", spr0ch}, {"SPR1 (toSPR)", spr1ch},
+			{"VIF0", vif0ch},
+			{"VIF1", vif1ch},
+			{"GIF", gifch},
+			{"IPU0 (fromIPU)", ipu0ch},
+			{"IPU1 (toIPU)", ipu1ch},
+			{"SIF0", sif0ch},
+			{"SIF1", sif1ch},
+			{"SIF2", sif2dma},
+			{"SPR0 (fromSPR)", spr0ch},
+			{"SPR1 (toSPR)", spr1ch},
 		};
 		for (const ChannelInfo& c : channels)
 		{
