@@ -17,7 +17,7 @@ or a static recompilation project.
 
 | Page | Games | Status |
 | --- | --- | --- |
-| [Blue-Shift engine](blue-shift-engine.md) | Marvel Nemesis, ESPN Major League Baseball, World Series Baseball 2K3 | ESPN MLB tested (2026-11-26). Marvel Nemesis and WSB 2K3 not tested yet |
+| [Blue-Shift engine](blue-shift-engine.md) | Marvel Nemesis, ESPN Major League Baseball, World Series Baseball 2K3 | Marvel Nemesis (USA), ESPN MLB and WSB 2K3 tested (2026-11-26). Other Marvel Nemesis regions not tested |
 
 ## Builds used for testing
 

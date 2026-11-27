@@ -81,7 +81,7 @@ other settings default.
 | Marvel Nemesis | SLKA-25311 | | | | | | |
 | Marvel Nemesis (Demo) | SLUS-29156 | | | | | | |
 | ESPN Major League Baseball | SLUS-20794 | v0.0.1 | Yes | Reaches gameplay | 53–59% (ParallelGS), 67% (Vulkan) | No: black jagged polygons near the camera | Menus and videos also slow (~53%). Thread Pinning on: no change. GPU only ~9% busy. Froze on exit. |
-| World Series Baseball 2K3 | SLUS-20611 | | | | | | |
+| World Series Baseball 2K3 | SLUS-20611 | v0.0.1 | Yes | No: hangs on the "Loading.." tips screen before any 3D | n/a | Menus OK | The 3 fixes active per log. No error and no DMA error in the log: a silent hang, not a crash. Matches the V0 cache-mode problem in issue #4484. |
 
 Test machine: Intel i7-12700K, NVIDIA RTX 3070, CachyOS Linux. Tested 2026-11-26. BIOS: SCPH-70012 (USA v2.00).
 
