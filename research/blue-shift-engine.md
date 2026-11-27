@@ -111,7 +111,7 @@ What this tells us:
 
 | Setting changed | Result |
 | --- | --- |
-| VU0/VU1 interpreters (no VU recompiler), default math | The bug changes: many frames draw fully correct, others show black and light-green patches. It flickers frame to frame (seen in a 4-second capture of the attract-mode demo). |
+| VU0/VU1 interpreters (no VU recompiler), default math | The bug changes: many frames draw fully correct, others show black and light-green patches. It flickers frame to frame (seen in a 4-second capture of the attract-mode demo, a small sample). Speed not recorded. MTVU is off automatically in this mode (PCSX2 only runs MTVU with the VU1 recompiler). |
 
 What this tells us: the game's geometry is correct when the timing happens to line up, and wrong when it doesn't. That points to a race between the EE and the VUs (or the DMA feeding them), not to bad math.
 
@@ -124,7 +124,27 @@ Both builds flood the log with one error, hundreds of millions of times:
 | Official PCSX2 v2.8.2 | `DMA error: 1a262400` | ~139 million |
 | This fork v0.0.1 | `DMA error: 1fac75f0` | ~340 million |
 
-The message comes from `dmaGetAddr()` in `pcsx2/Dmac.cpp`. It means a DMA transfer was pointed at an address with no memory behind it, so the game is following a broken DMA chain. A chain read before the game finished writing it would fit the timing theory. The error starts once 3D is about to show (around 30–60 s after boot).
+Counted with `grep -c "DMA error"` on each session's `emulog.txt`. The two addresses are different: same message, a different bad address in each build.
+
+The message comes from `dmaGetAddr()` in `pcsx2/Dmac.cpp`. It means a DMA transfer was pointed at an address with no memory behind it, so the game is following a broken DMA chain. A chain read before the game finished writing it would fit the timing theory, but that is not proven.
+
+When the first error appears (log timestamps, seconds since PCSX2 started):
+
+| Build | Game ELF started | First `DMA error` | Gap |
+| --- | --- | --- | --- |
+| Official PCSX2 v2.8.2 | 86.28 s | 109.50 s | ~23 s |
+| This fork v0.0.1 | 71.41 s | 132.46 s | ~61 s |
+
+The gap depends on how fast the tester went through the menus, so it is not a fixed time. In both logs, the lines just before the first error are only controller (Pad) configuration messages. Nothing else is logged between the game starting and the error flood.
+
+Log excerpt, this fork (official PCSX2 looks the same, with its own address):
+
+```
+[   75.1799] Pad: DS2 Config Finished - P1/S1 - AL: On - AB: Locked - VS: Normal - VL: Normal - RB: D+A+P (0x0003FFFF)
+[  132.4576] *PCSX2*: DMA error: 1fac75f0
+[  132.4576] *PCSX2*: DMA error: 1fac75f0
+[  132.4576] *PCSX2*: DMA error: 1fac75f0
+```
 
 Side effects found during testing:
 - With file logging on (the default), the log grew to 5–8 GB in one session.
@@ -132,4 +152,6 @@ Side effects found during testing:
 
 ## Notes for recomp projects
 
-*To be written after testing.*
+- A static recompile of a Blue-Shift game still needs the VU0/VU1 programs emulated or translated, and the order of EE↔VU communication kept exact. The `VUCommunicationHack` notes above show where that order matters.
+- The DMA chains the game builds must be read only after the game finishes writing them. The ESPN MLB results suggest emulators get this timing wrong.
+- More notes will be added as testing continues.
