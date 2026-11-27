@@ -85,6 +85,15 @@ other settings default.
 
 Test machine: Intel i7-12700K, NVIDIA RTX 3070, CachyOS Linux. Tested 2026-11-26. BIOS: SCPH-70012 (USA v2.00).
 
+### Marvel Nemesis speed checks (this fork v0.0.1, Vulkan)
+
+| Setting | Speed in a fight |
+| --- | --- |
+| Default (MTVU on, Thread Pinning off) | ~53% |
+| MTVU off | ~55% |
+
+The CPU was running at full speed during the test: about 4.9 GHz on all cores, power profile "performance" (`intel_pstate` governor "powersave", which is normal for Intel CPUs). So the slowdown is not CPU throttling. Others reported 85–99% for this game on other hardware. The reason for the gap is not known yet.
+
 ### Comparison with official PCSX2
 
 Same game, same settings (default + Vulkan), official PCSX2 v2.8.2 (no Blue-Shift fixes):
