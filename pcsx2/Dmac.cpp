@@ -77,6 +77,64 @@ __fi void setDmacStat(u32 num)
 	dmacRegs.stat.set_flags(1 << num);
 }
 
+// Diagnostic logging for DMA accesses to unmapped addresses (Libra2393 fork).
+// Upstream logs one line per bad access, which can flood the log with hundreds of
+// millions of identical lines (seen with ESPN Major League Baseball, SLUS-20794).
+// This logs a full DMA register dump once per unique bad address, then only a
+// periodic count. Needs proper testing.
+static void LogBadDmaAddr(const char* func, u32 raw_addr, u32 masked_addr)
+{
+	static u32 s_seen[64];
+	static u32 s_seen_count = 0;
+	static u64 s_total = 0;
+
+	s_total++;
+
+	bool seen = false;
+	for (u32 i = 0; i < s_seen_count; i++)
+	{
+		if (s_seen[i] == masked_addr)
+		{
+			seen = true;
+			break;
+		}
+	}
+
+	if (!seen && s_seen_count < std::size(s_seen))
+	{
+		s_seen[s_seen_count++] = masked_addr;
+
+		Console.Error("*PCSX2*: DMA error: %8.8x (raw %8.8x) in %s, first time. EE PC=%8.8x, DMAC CTRL=%8.8x STAT=%8.8x",
+			masked_addr, raw_addr, func, cpuRegs.pc, dmacRegs.ctrl._u32, dmacRegs.stat._u32);
+
+		struct ChannelInfo
+		{
+			const char* name;
+			const DMACh& ch;
+		};
+		const ChannelInfo channels[] = {
+			{"VIF0", vif0ch}, {"VIF1", vif1ch}, {"GIF", gifch}, {"IPU0 (fromIPU)", ipu0ch},
+			{"IPU1 (toIPU)", ipu1ch}, {"SIF0", sif0ch}, {"SIF1", sif1ch}, {"SIF2", sif2dma},
+			{"SPR0 (fromSPR)", spr0ch}, {"SPR1 (toSPR)", spr1ch},
+		};
+		for (const ChannelInfo& c : channels)
+		{
+			const bool match = ((c.ch.madr & 0x1ffffff0) == masked_addr) || ((c.ch.tadr & 0x1ffffff0) == masked_addr);
+			Console.Error("    %-15s CHCR=%8.8x (STR=%u MOD=%u) MADR=%8.8x QWC=%8.8x TADR=%8.8x%s",
+				c.name, c.ch.chcr._u32, static_cast<u32>(c.ch.chcr.STR), static_cast<u32>(c.ch.chcr.MOD), c.ch.madr, c.ch.qwc, c.ch.tadr,
+				match ? "   <== address matches" : "");
+		}
+		return;
+	}
+
+	// Periodic summary: at 1024, 2048, 4096, ... total bad accesses.
+	if (s_total >= 1024 && (s_total & (s_total - 1)) == 0)
+	{
+		Console.Error("*PCSX2*: DMA error: %llu bad DMA accesses so far (%u unique addresses). Latest: %8.8x in %s, EE PC=%8.8x",
+			static_cast<unsigned long long>(s_total), s_seen_count, masked_addr, func, cpuRegs.pc);
+	}
+}
+
 // Note: Dma addresses are guaranteed to be aligned to 16 bytes (128 bits)
 __fi tDMA_TAG* SPRdmaGetAddr(u32 addr, bool write)
 {
@@ -87,6 +145,8 @@ __fi tDMA_TAG* SPRdmaGetAddr(u32 addr, bool write)
 	{
 		return (tDMA_TAG*)&eeMem->Scratch[addr & 0x3ff0];
 	}
+
+	const u32 raw_addr = addr;
 
 	// FIXME: Why??? DMA uses physical addresses
 	addr &= 0x1ffffff0;
@@ -140,7 +200,7 @@ __fi tDMA_TAG* SPRdmaGetAddr(u32 addr, bool write)
 	}
 	else
 	{
-		Console.Error( "*PCSX2*: DMA error: %8.8x", addr);
+		LogBadDmaAddr("SPRdmaGetAddr", raw_addr, addr);
 		return NULL;
 	}
 }
@@ -150,6 +210,8 @@ __ri tDMA_TAG *dmaGetAddr(u32 addr, bool write)
 {
 	// if (addr & 0xf) { DMA_LOG("*PCSX2*: DMA address not 128bit aligned: %8.8x", addr); }
 	if (DMA_TAG(addr).SPR) return (tDMA_TAG*)&eeMem->Scratch[addr & 0x3ff0];
+
+	const u32 raw_addr = addr;
 
 	// FIXME: Why??? DMA uses physical addresses
 	addr &= 0x1ffffff0;
@@ -170,7 +232,7 @@ __ri tDMA_TAG *dmaGetAddr(u32 addr, bool write)
 	}
 	else
 	{
-		Console.Error( "*PCSX2*: DMA error: %8.8x", addr);
+		LogBadDmaAddr("dmaGetAddr", raw_addr, addr);
 		return NULL;
 	}
 }
