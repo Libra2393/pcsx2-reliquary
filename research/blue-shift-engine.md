@@ -76,7 +76,7 @@ other settings default.
 
 | Game | Serial | Build | Boots? | Plays a full match? | Speed % | Graphics OK? | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Marvel Nemesis | SLUS-21281 | v0.0.1 | Yes | Gameplay reached (full fight not confirmed) | ~53% (Vulkan) | Yes, looked normal | All 4 fixes active per log. No DMA errors in the log. Much slower than the ~99% / 85–90% others reported. |
+| Marvel Nemesis | SLUS-21281 | v0.0.1 | Yes | Yes, fights play (tested on two maps) | ~53% (Vulkan), steady ~20 FPS | Yes. Effects render, fog shows on the second map | All 4 fixes active per log. No DMA errors in the log. Much slower than the ~99% / 85–90% others reported. |
 | Marvel Nemesis | SLES-53585 | | | | | | |
 | Marvel Nemesis | SLKA-25311 | | | | | | |
 | Marvel Nemesis (Demo) | SLUS-29156 | | | | | | |
