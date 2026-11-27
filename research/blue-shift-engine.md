@@ -123,6 +123,9 @@ Both builds flood the log with one error, hundreds of millions of times:
 | --- | --- | --- |
 | Official PCSX2 v2.8.2 | `DMA error: 1a262400` | ~139 million |
 | This fork v0.0.1 | `DMA error: 1fac75f0` | ~340 million |
+| This fork v0.0.1, VU0/VU1 interpreters | `DMA error: 19676c00` | ~16.5 million (shorter session) |
+
+Interpreter run (2026-11-26): the save state from the field loaded at 32.1 s. No DMA error for about 90 s, then the flood started at 123.7 s. So the broken DMA chain also happens with both VU interpreters. It is not only caused by the VU recompilers. Each run shows a different bad address.
 
 Counted with `grep -c "DMA error"` on each session's `emulog.txt`. The two addresses are different: same message, a different bad address in each build.
 
