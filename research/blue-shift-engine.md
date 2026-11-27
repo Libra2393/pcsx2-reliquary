@@ -109,6 +109,27 @@ What this tells us:
 - ParallelGS draws the PS2 graphics chip very accurately and still shows the bug. So the polygon corners are already wrong when they reach the graphics chip.
 - Clamping and exact math did not fix it. So it is probably not a math precision problem. Timing between the EE and the VUs is the next suspect.
 
+| Setting changed | Result |
+| --- | --- |
+| VU0/VU1 interpreters (no VU recompiler), default math | The bug changes: many frames draw fully correct, others show black and light-green patches. It flickers frame to frame (seen in a 4-second capture of the attract-mode demo). |
+
+What this tells us: the game's geometry is correct when the timing happens to line up, and wrong when it doesn't. That points to a race between the EE and the VUs (or the DMA feeding them), not to bad math.
+
+### DMA errors in the log
+
+Both builds flood the log with one error, hundreds of millions of times:
+
+| Build | Error | Count in one session |
+| --- | --- | --- |
+| Official PCSX2 v2.8.2 | `DMA error: 1a262400` | ~139 million |
+| This fork v0.0.1 | `DMA error: 1fac75f0` | ~340 million |
+
+The message comes from `dmaGetAddr()` in `pcsx2/Dmac.cpp`. It means a DMA transfer was pointed at an address with no memory behind it, so the game is following a broken DMA chain. A chain read before the game finished writing it would fit the timing theory. The error starts once 3D is about to show (around 30–60 s after boot).
+
+Side effects found during testing:
+- With file logging on (the default), the log grew to 5–8 GB in one session.
+- Making a save state (F1) crashed the fork once (SIGABRT). It worked on a later try.
+
 ## Notes for recomp projects
 
 *To be written after testing.*
